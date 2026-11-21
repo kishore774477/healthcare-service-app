@@ -1,0 +1,21 @@
+{# Admin action buttons for a single appointment `a` #}
+<div class="d-inline-flex flex-wrap gap-1 justify-content-end">
+  {% if a.status == 'Pending' and a.is_upcoming %}
+  <form method="post" action="{{ url_for('admin.appointment_action', appointment_id=a.id, action='approve') }}">
+    {{ action_form.hidden_tag() }}<button class="btn btn-sm btn-success" title="Approve"><i class="bi bi-check-lg"></i> Approve</button>
+  </form>
+  {% endif %}
+  {% if a.is_active %}
+    {% if a.is_upcoming %}
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.reschedule', appointment_id=a.id) }}" title="Reschedule"><i class="bi bi-arrow-repeat"></i></a>
+    {% else %}
+    <form method="post" action="{{ url_for('admin.appointment_action', appointment_id=a.id, action='complete') }}">
+      {{ action_form.hidden_tag() }}<button class="btn btn-sm btn-outline-secondary" title="Mark completed"><i class="bi bi-check2-all"></i> Complete</button>
+    </form>
+    {% endif %}
+  <form method="post" action="{{ url_for('admin.appointment_action', appointment_id=a.id, action='cancel') }}"
+        onsubmit="return confirm('Cancel this appointment for {{ a.patient.username }}?');">
+    {{ action_form.hidden_tag() }}<button class="btn btn-sm btn-outline-danger" title="Cancel"><i class="bi bi-x-lg"></i></button>
+  </form>
+  {% endif %}
+</div>

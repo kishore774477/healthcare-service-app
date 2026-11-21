@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge %}
+{% block title %}Reschedule Appointment{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-3">Reschedule appointment</h1>
+        <div class="alert alert-light border d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <strong>{{ appointment.provider.name }}</strong> · {{ appointment.provider.specialty }}
+            {% if current_user.is_admin %}<div class="small">Patient: {{ appointment.patient.username }} ({{ appointment.patient.email }})</div>{% endif %}
+            <div class="small text-muted">Currently: {{ appointment.start_at|dt }}</div>
+          </div>
+          {{ status_badge(appointment) }}
+        </div>
+        <form method="post" novalidate data-slot-form
+              data-slots-url="{{ url_for('api.provider_slots', provider_id=appointment.provider_id) }}"
+              data-exclude="{{ appointment.id }}">
+          {{ form.hidden_tag() }}
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              {{ form.date.label(class="form-label") }}
+              {{ form.date(class="form-control" ~ (" is-invalid" if form.date.errors else ""), min=min_date, max=max_date, **{"data-date-input": ""}) }}
+              {% for e in form.date.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="col-md-6">
+              {{ form.slot.label(class="form-label") }}
+              {{ form.slot(class="form-select" ~ (" is-invalid" if form.slot.errors else ""), **{"data-slot-select": ""}) }}
+              {% for e in form.slot.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+              <div class="form-text" data-slot-message></div>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ back_url }}" class="btn btn-outline-secondary">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/slots.js') }}"></script>{% endblock %}

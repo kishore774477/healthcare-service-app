@@ -1,0 +1,63 @@
+:root {
+  --hsa-primary: #0d7c8c;
+  --hsa-primary-dark: #075e6b;
+  --bs-primary: var(--hsa-primary);
+  --bs-primary-rgb: 13, 124, 140;
+  --bs-link-color: var(--hsa-primary);
+  --bs-link-color-rgb: 13, 124, 140;
+  --bs-link-hover-color: var(--hsa-primary-dark);
+}
+
+body { background: #f4f8f9; }
+
+.btn-primary {
+  --bs-btn-bg: var(--hsa-primary);
+  --bs-btn-border-color: var(--hsa-primary);
+  --bs-btn-hover-bg: var(--hsa-primary-dark);
+  --bs-btn-hover-border-color: var(--hsa-primary-dark);
+  --bs-btn-active-bg: var(--hsa-primary-dark);
+  --bs-btn-disabled-bg: var(--hsa-primary);
+  --bs-btn-disabled-border-color: var(--hsa-primary);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--hsa-primary);
+  --bs-btn-border-color: var(--hsa-primary);
+  --bs-btn-hover-bg: var(--hsa-primary);
+  --bs-btn-hover-border-color: var(--hsa-primary);
+  --bs-btn-active-bg: var(--hsa-primary-dark);
+}
+.text-primary { color: var(--hsa-primary) !important; }
+.progress-bar { background-color: var(--hsa-primary); }
+.nav-tabs .nav-link.active { font-weight: 600; }
+
+.hsa-nav { background: linear-gradient(90deg, var(--hsa-primary-dark), var(--hsa-primary)); }
+
+.hero { background: linear-gradient(135deg, var(--hsa-primary-dark), #14a3a8 70%, #3cc3a5); }
+.hero-icon { font-size: 9rem; opacity: .85; }
+
+.feature-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: rgba(13, 124, 140, .1); color: var(--hsa-primary); font-size: 1.4rem;
+}
+.feature-card { transition: transform .15s ease; }
+.feature-card:hover { transform: translateY(-3px); }
+
+.avatar {
+  flex: 0 0 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700;
+  background: var(--hsa-primary); color: #fff;
+}
+
+.flash-stack .alert { border-left: 5px solid currentColor; }
+
+.reminder-item { border-left: 4px solid #ffc107; }
+
+.slot-chip {
+  display: inline-block; padding: .2rem .5rem; border-radius: 999px;
+  font-size: .78rem; font-variant-numeric: tabular-nums;
+}
+.slot-free { background: #e3f4ef; color: #146c43; }
+.slot-booked { background: #fde2e1; color: #b02a37; cursor: help; }
+
+.table > :not(caption) > * > * { padding: .75rem; }

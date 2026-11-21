@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero rounded-4 p-4 p-md-5 mb-5 text-white shadow">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <h1 class="display-5 fw-bold mb-3">Healthcare, booked in minutes.</h1>
+      <p class="lead mb-4">Register, log in securely and book appointments with our healthcare providers. View, reschedule or cancel anytime, and get reminders before every visit.</p>
+      <div class="d-flex flex-wrap gap-2">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('admin.dashboard') if current_user.is_admin else url_for('patient.book') }}" class="btn btn-light btn-lg fw-semibold text-primary">
+            {{ 'Open admin dashboard' if current_user.is_admin else 'Book an appointment' }}
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg fw-semibold text-primary">Create an account</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Log in</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-5 d-none d-lg-block text-center">
+      <i class="bi bi-hospital hero-icon"></i>
+    </div>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div class="row g-4">
+    {% for icon, title, text in [
+      ('bi-person-plus', 'Easy registration', 'Create a secure account in seconds. Passwords are always stored hashed.'),
+      ('bi-calendar2-check', 'Real-time availability', 'See only the open slots for each provider and book without conflicts.'),
+      ('bi-arrow-repeat', 'Manage anytime', 'View history, cancel or reschedule upcoming appointments yourself.'),
+      ('bi-bell', 'Reminders', 'Your dashboard highlights every appointment in the next 24 hours.'),
+    ] %}
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm feature-card">
+        <div class="card-body">
+          <div class="feature-icon mb-3"><i class="bi {{ icon }}"></i></div>
+          <h5 class="card-title">{{ title }}</h5>
+          <p class="card-text text-muted small mb-0">{{ text }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2 class="h4 mb-3">Our healthcare providers</h2>
+  <div class="row g-3">
+    {% for p in providers %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body d-flex gap-3 align-items-start">
+          <div class="avatar">{{ p.name.split()[-1][0] }}</div>
+          <div class="flex-grow-1">
+            <h6 class="mb-0">{{ p.name }}</h6>
+            <div class="text-primary small mb-2">{{ p.specialty }}</div>
+            <div class="small text-muted"><i class="bi bi-calendar-week"></i> {{ p.working_days_label }}</div>
+            <div class="small text-muted"><i class="bi bi-clock"></i> {{ p.hours_label }}</div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0 pt-0">
+          <a class="btn btn-sm btn-outline-primary w-100" href="{{ url_for('patient.book', provider=p.id) }}">Book with {{ p.name.split()[-1] }}</a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+      <p class="text-muted">No providers are accepting appointments right now.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

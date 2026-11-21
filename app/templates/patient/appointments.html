@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge %}
+{% block title %}My Appointments{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">My Appointments</h1>
+  <a href="{{ url_for('patient.book') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Book appointment</a>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">Upcoming <span class="badge text-bg-primary">{{ upcoming|length }}</span></button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab">History <span class="badge text-bg-secondary">{{ past|length }}</span></button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
+    {% if upcoming %}
+    <div class="table-responsive card border-0 shadow-sm">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Provider</th><th>Date &amp; time</th><th>Reason</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for a in upcoming %}
+          <tr>
+            <td><strong>{{ a.provider.name }}</strong><div class="small text-muted">{{ a.provider.specialty }}</div></td>
+            <td>{{ a.start_at|dt }}</td>
+            <td class="small text-muted">{{ a.reason or '—' }}</td>
+            <td>{{ status_badge(a) }}</td>
+            <td class="text-end text-nowrap">
+              <a href="{{ url_for('patient.reschedule', appointment_id=a.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-repeat"></i> Reschedule</a>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancel-{{ a.id }}"><i class="bi bi-x-lg"></i> Cancel</button>
+              <div class="modal fade text-start" id="cancel-{{ a.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+                  <div class="modal-header"><h5 class="modal-title">Cancel appointment?</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                  <div class="modal-body text-wrap">Cancel your appointment with <strong>{{ a.provider.name }}</strong> on {{ a.start_at|dt }}? This can't be undone, but you can book again.</div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep it</button>
+                    <form method="post" action="{{ url_for('patient.cancel', appointment_id=a.id) }}">
+                      {{ action_form.hidden_tag() }}
+                      <button type="submit" class="btn btn-danger">Yes, cancel</button>
+                    </form>
+                  </div>
+                </div></div>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="text-center text-muted py-5"><i class="bi bi-calendar-x fs-1"></i><p class="mt-2">No upcoming appointments.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="tab-pane fade" id="past" role="tabpanel">
+    {% if past %}
+    <div class="table-responsive card border-0 shadow-sm">
+      <table class="table align-middle mb-0">
+        <thead class="table-light"><tr><th>Provider</th><th>Date &amp; time</th><th>Reason</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for a in past %}
+          <tr>
+            <td><strong>{{ a.provider.name }}</strong><div class="small text-muted">{{ a.provider.specialty }}</div></td>
+            <td>{{ a.start_at|dt }}</td>
+            <td class="small text-muted">{{ a.reason or '—' }}</td>
+            <td>{{ status_badge(a) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="text-center text-muted py-5"><i class="bi bi-clock-history fs-1"></i><p class="mt-2">No past appointments yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

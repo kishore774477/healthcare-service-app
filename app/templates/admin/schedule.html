@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Provider Schedule{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Schedule &amp; availability</h1>
+  <form class="d-flex gap-2 align-items-center" method="get">
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.schedule', date=prev_day.isoformat()) }}" aria-label="Previous day"><i class="bi bi-chevron-left"></i></a>
+    <input type="date" class="form-control" name="date" value="{{ day.isoformat() }}" onchange="this.form.submit()" aria-label="Date">
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.schedule', date=next_day.isoformat()) }}" aria-label="Next day"><i class="bi bi-chevron-right"></i></a>
+  </form>
+</div>
+<p class="text-muted">{{ day.strftime('%A, %d %B %Y') }} · <span class="slot-chip slot-free">Free</span> <span class="slot-chip slot-booked">Booked</span></p>
+
+<div class="row g-3">
+{% for s in summaries %}
+  {% set p = s.provider %}
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div><strong>{{ p.name }}</strong> <span class="text-muted small">· {{ p.specialty }}</span>
+          {% if not p.is_active %}<span class="badge text-bg-secondary ms-1">Inactive</span>{% endif %}</div>
+        {% if s.total %}
+        <span class="small text-muted">{{ s.booked }}/{{ s.total }} booked</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if s.total %}
+          <div class="progress mb-3" role="progressbar" aria-label="Utilisation" aria-valuenow="{{ (100 * s.booked / s.total)|round|int }}" aria-valuemin="0" aria-valuemax="100" style="height:6px">
+            <div class="progress-bar" style="width: {{ (100 * s.booked / s.total)|round|int }}%"></div>
+          </div>
+          <div class="d-flex flex-wrap gap-1">
+          {% for slot in s.slots %}
+            {% set appt = booked.get((p.id, slot.time)) %}
+            <span class="slot-chip {{ 'slot-booked' if slot.booked else 'slot-free' }}"
+                  {% if appt %}title="{{ appt.patient.username }} ({{ appt.status }})"{% endif %}>{{ slot.time|tm }}</span>
+          {% endfor %}
+          </div>
+        {% elif not p.is_active %}
+          <p class="text-muted mb-0">Not accepting appointments.</p>
+        {% else %}
+          <p class="text-muted mb-0">Not working on {{ day.strftime('%A') }}s (works {{ p.working_days_label }}).</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}

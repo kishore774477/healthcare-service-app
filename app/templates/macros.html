@@ -1,0 +1,23 @@
+{% macro status_badge(appt) -%}
+  {%- set s = appt.display_status -%}
+  {%- set cls = {
+      'Pending': 'text-bg-warning',
+      'Confirmed': 'text-bg-success',
+      'Completed': 'text-bg-secondary',
+      'Cancelled': 'text-bg-danger',
+      'Overdue': 'text-bg-dark'
+    }[s] -%}
+  <span class="badge {{ cls }}">{{ s }}</span>
+{%- endmacro %}
+
+{% macro field(f, type=None) -%}
+  <div class="mb-3">
+    {{ f.label(class="form-label") }}
+    {% if f.type == 'SelectField' %}
+      {{ f(class="form-select" ~ (" is-invalid" if f.errors else "")) }}
+    {% else %}
+      {{ f(class="form-control" ~ (" is-invalid" if f.errors else ""), **({'type': type} if type else {})) }}
+    {% endif %}
+    {% for e in f.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+  </div>
+{%- endmacro %}

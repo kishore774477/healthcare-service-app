@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-1">Book an appointment</h1>
+        <p class="text-muted mb-4">Choose a provider and date to see the available time slots.</p>
+        <form method="post" novalidate data-slot-form
+              data-slots-url="{{ url_for('api.provider_slots', provider_id=0) }}">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            {{ form.provider_id.label(class="form-label") }}
+            {{ form.provider_id(class="form-select" ~ (" is-invalid" if form.provider_id.errors else ""), **{"data-provider-select": ""}) }}
+            {% for e in form.provider_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              {{ form.date.label(class="form-label") }}
+              {{ form.date(class="form-control" ~ (" is-invalid" if form.date.errors else ""), min=min_date, max=max_date, **{"data-date-input": ""}) }}
+              {% for e in form.date.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="col-md-6">
+              {{ form.slot.label(class="form-label") }}
+              {{ form.slot(class="form-select" ~ (" is-invalid" if form.slot.errors else ""), **{"data-slot-select": ""}) }}
+              {% for e in form.slot.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+              <div class="form-text" data-slot-message></div>
+            </div>
+          </div>
+          <div class="mt-3 mb-4">
+            {{ form.reason.label(class="form-label") }}
+            {{ form.reason(class="form-control", rows=3, maxlength=300, placeholder="e.g. Fever for two days") }}
+          </div>
+          <div class="d-flex gap-2">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('patient.appointments') }}" class="btn btn-outline-secondary">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/slots.js') }}"></script>{% endblock %}

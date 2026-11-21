@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge %}
+{% block title %}Manage Appointments{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Manage appointments</h1>
+
+<form class="card card-body border-0 shadow-sm mb-3" method="get">
+  <div class="row g-2 align-items-end">
+    <div class="col-sm-4 col-lg-3">
+      <label class="form-label small mb-1" for="f-status">Status</label>
+      <select class="form-select" id="f-status" name="status">
+        <option value="">All statuses</option>
+        {% for s in statuses %}<option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-4 col-lg-4">
+      <label class="form-label small mb-1" for="f-provider">Provider</label>
+      <select class="form-select" id="f-provider" name="provider">
+        <option value="">All providers</option>
+        {% for p in providers %}<option value="{{ p.id }}" {% if filters.provider == p.id %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-4 col-lg-3">
+      <label class="form-label small mb-1" for="f-date">Date</label>
+      <input class="form-control" type="date" id="f-date" name="date" value="{{ filters.date }}">
+    </div>
+    <div class="col-lg-2 d-flex gap-2">
+      <button class="btn btn-primary flex-grow-1">Filter</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.appointments') }}" title="Clear filters"><i class="bi bi-x-lg"></i></a>
+    </div>
+  </div>
+</form>
+
+<div class="table-responsive card border-0 shadow-sm">
+  <table class="table table-hover align-middle mb-0">
+    <thead class="table-light"><tr><th>#</th><th>Patient</th><th>Provider</th><th>Date &amp; time</th><th>Reason</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>
+    {% for a in appointments %}
+      <tr>
+        <td class="text-muted small">{{ a.id }}</td>
+        <td><strong>{{ a.patient.username }}</strong><div class="small text-muted">{{ a.patient.email }}</div></td>
+        <td>{{ a.provider.name }}<div class="small text-muted">{{ a.provider.specialty }}</div></td>
+        <td class="text-nowrap">{{ a.start_at|dt }}</td>
+        <td class="small text-muted">{{ a.reason or '—' }}</td>
+        <td>{{ status_badge(a) }}</td>
+        <td class="text-end">{% include "admin/_actions.html" %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-5">No appointments match these filters.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
